@@ -5,13 +5,16 @@ import android.content.res.Resources;
 import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.module.annotations.ReactModule;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.HashMap;
 
+@ReactModule(name = RNCConfigModule.NAME)
 public class RNCConfigModule extends ReactContextBaseJavaModule {
+    public static final String NAME = "RNCConfigModule";
 
     public RNCConfigModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -19,16 +22,22 @@ public class RNCConfigModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNCConfigModule";
+        return NAME;
     }
 
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         try {
-            
-           
-            Class clazz = Class.forName("com.core.BuildConfig");
+            Context context = getReactApplicationContext();
+            int resId = context.getResources().getIdentifier("build_config_package", "string", context.getPackageName());
+            String className;
+            try {
+                className = context.getString(resId);
+            } catch (Resources.NotFoundException e) {
+                className = getReactApplicationContext().getApplicationContext().getPackageName();
+            }
+            Class clazz = Class.forName(className + ".BuildConfig");
             Field[] fields = clazz.getDeclaredFields();
             for (Field f : fields) {
                 try {

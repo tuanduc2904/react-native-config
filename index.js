@@ -6,4 +6,5 @@
 import { NativeModules } from 'react-native';
 
 export const Config = NativeModules.RNCConfigModule || {}
+
 export default Config;
